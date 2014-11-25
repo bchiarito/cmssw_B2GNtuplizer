@@ -348,10 +348,10 @@ bool b2g_miniAodAnalyzer_general::filter(edm::Event& iEvent, const edm::EventSet
 	for (const reco::BasicJet &ijet : *ca8prunedjets)
 	{
 		reco::Candidate::PolarLorentzVector jet4 (ijet.pt(), ijet.eta(), ijet.phi(), ijet.mass());
-		if (jet4.Pt() > 20 && jet4.Eta() < 2.4 && jet4.Eta() > -2.4) // temporary cut to compensate for clustering with all PF
-		{
+		//if (jet4.Pt() > 20 && jet4.Eta() < 2.4 && jet4.Eta() > -2.4) 
+		//{
 			ca8prunedjet->push_back(jet4);
-		}
+		//} // kinematic cut on jets
 	}
 	
 	/// toptag jets and info
@@ -363,14 +363,14 @@ bool b2g_miniAodAnalyzer_general::filter(edm::Event& iEvent, const edm::EventSet
 	{
 		reco::Candidate::PolarLorentzVector jet4 (iter_jet[i].pt(), iter_jet[i].eta(), iter_jet[i].phi(), iter_jet[i].mass());
 		const reco::CATopJetTagInfo info = iter_info[i];
-		if (jet4.Pt() > 20 && jet4.Eta() < 2.4 && jet4.Eta() > -2.4) // temporary cut compensate for clustering with all PF
-		{
+		//if (jet4.Pt() > 20 && jet4.Eta() < 2.4 && jet4.Eta() > -2.4)
+		//{
 			toptagjet->push_back(jet4);
 			toptagnsub->push_back(info.properties().nSubJets);
 			toptagminmass->push_back(info.properties().minMass);
 			toptagWmass->push_back(info.properties().wMass);
 			toptagtopmass->push_back(info.properties().topMass);
-		}
+		//} // kinematic cut on jets
 	}
 
 	/// ca8 jets built from scratch with fastjet

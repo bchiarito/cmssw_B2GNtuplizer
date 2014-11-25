@@ -2,18 +2,28 @@ import FWCore.ParameterSet.Config as cms
 ###############################################
 # Test V1
 ###############################################
-testFile =  'file:/eos/uscms/store/user/bchiari1/miniaod/ver1/T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_pythia8-23bodydec.MINIAODSIM.00.root'
+#testFile =  'file:/eos/uscms/store/user/bchiari1/miniaod/ver1/T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_pythia8-23bodydec.MINIAODSIM.00.root'
 ###############################################
 
 process = cms.Process("B2G")
 
 process.source = cms.Source("PoolSource",
-	fileNames = cms.untracked.vstring(testFile)
+	fileNames = cms.untracked.vstring(
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/000A288B-8C70-E411-8830-20CF300E9EB6.root',
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/3E123FA3-BC70-E411-8EF4-0025907B4ECA.root',
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/72721CA0-BC70-E411-9320-0025907B4F32.root',
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/78813892-BC70-E411-8128-00259073E34C.root',
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/7E657093-BC70-E411-AE05-E0CB4E1A1163.root',
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/9849B195-BC70-E411-AB45-E0CB4E4408DD.root',
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/9E280490-BC70-E411-9911-E0CB4E19F9BC.root',
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/C232BA9C-BC70-E411-A452-20CF3027A5AD.root',
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/C820D7FD-8B70-E411-97A2-485B39800B62.root',
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/E873348E-BC70-E411-BFA8-0025907B4FD6.root')
 )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.cerr.FwkReport.reportEvery = 200
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.out = cms.OutputModule("PoolOutputModule",
@@ -52,6 +62,7 @@ process.ca8PFJetsCHSPruned = ak5PFJets.clone(
 process.cmsTopTagPFJetsCHS = cmsTopTagPFJetsCHS.clone(src = cms.InputTag('chs'))
 process.caTopTagInfos = caTopTagInfos.clone(src = cms.InputTag("cmsTopTagPFJetsCHS"))
 
+# Can add a cut if desired
 process.selectedca8PFJetsCHS = cms.EDFilter('PFJetSelector',
 					src = cms.InputTag('ca8PFJetsCHS'),
 					cut = cms.string('pt > 25 && abs(eta) < 2.4'))

@@ -1,4 +1,0 @@
-ntuplizer
-=========
-
-ntuplizer for miniAOD

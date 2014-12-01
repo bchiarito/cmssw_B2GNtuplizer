@@ -1,2 +1,11 @@
 #### Notes:
 
+- TASKS -
+() = ongoing
+(x) = broken/stuck
+(v) = complete
+
+() Muons _ Marc
+() Electrons _ Marc?
+() Trigger _ Brandon
+

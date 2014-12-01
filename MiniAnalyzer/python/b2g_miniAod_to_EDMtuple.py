@@ -96,3 +96,4 @@ process.p = cms.Path(
 	process.extraJetCols *
 	process.b2g
 )
+print "---+++---+++---+++---"

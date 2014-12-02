@@ -5,10 +5,11 @@ process = cms.Process("B2G")
 # Input file
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/E873348E-BC70-E411-BFA8-0025907B4FD6.root')
-)
+#'file:/eos/uscms/store/user/bchiari1/miniaod/ver1/T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_pythia8-23bodydec.MINIAODSIM.00.root'
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/E873348E-BC70-E411-BFA8-0025907B4FD6.root'
+))
 # Number of events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
 # Message Service
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -70,8 +71,13 @@ process.extraJetCols = cms.Sequence(
 )
 
 # Ntuplizer
+process.trigger = cms.EDAnalyzer('b2g_miniAodAnalyzer_trigger',
+					bits		= cms.InputTag("TriggerResults"),
+	    				prescales 	= cms.InputTag("patTrigger"),
+					objects		= cms.InputTag("selectedPatTrigger")
+)
 process.b2g = cms.EDFilter('b2g_miniAodAnalyzer_general',
-					vertexToken	= cms.InputTag('offlineSlimmedPrimaryVertices'),
+					vertexToken	= cms.InputTag("offlineSlimmedPrimaryVertices"),
 	    				metToken 	= cms.InputTag("slimmedMETs"),
 					electronToken	= cms.InputTag("slimmedElectrons"),
 		    			muonToken	= cms.InputTag("slimmedMuons"),
@@ -94,6 +100,7 @@ process.b2g = cms.EDFilter('b2g_miniAodAnalyzer_general',
 # Path
 process.p = cms.Path(
 	process.extraJetCols *
+	process.trigger *
 	process.b2g
 )
 print "---+++---+++---+++---"

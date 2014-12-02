@@ -19,7 +19,7 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.out = cms.OutputModule("PoolOutputModule",
 		   fileName = cms.untracked.string("ntuple.root"),
 		   SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p')),
-		   outputCommands = cms.untracked.vstring('drop *','keep *_b2g_*_*'))
+		   outputCommands = cms.untracked.vstring('drop *','keep *_TriggerResults_*_HLT','keep *_patTrigger_*_*','keep *_selectedPatTrigger_*_*','keep *_b2g_*_*'))
 process.outpath = cms.EndPath(process.out)
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.out.dropMetaData = cms.untracked.string("DROPPED")

@@ -9,18 +9,22 @@ process.source = cms.Source("PoolSource",
 '/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/E873348E-BC70-E411-BFA8-0025907B4FD6.root'
 ))
 # Number of events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 # Message Service
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 # Output file
 process.out = cms.OutputModule("PoolOutputModule",
 		   fileName = cms.untracked.string("ntuple.root"),
 		   SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p')),
-		   outputCommands = cms.untracked.vstring('drop *','keep *_TriggerResults_*_HLT','keep *_patTrigger_*_*','keep *_selectedPatTrigger_*_*','keep *_b2g_*_*'))
+		   outputCommands = cms.untracked.vstring('drop *',
+		     # Below passes on trigger collections from miniAOD
+                     #'keep *_TriggerResults_*_HLT','keep *_patTrigger_*_*','keep *_selectedPatTrigger_*_*',
+                     'keep *_*_*_B2G'
+))
 process.outpath = cms.EndPath(process.out)
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.out.dropMetaData = cms.untracked.string("DROPPED")
@@ -71,12 +75,18 @@ process.extraJetCols = cms.Sequence(
 )
 
 # Ntuplizer
-process.trigger = cms.EDAnalyzer('b2g_miniAodAnalyzer_trigger',
-					bits		= cms.InputTag("TriggerResults"),
+process.trigger = cms.EDFilter('b2g_miniAodAnalyzer_trigger',
+					printAll	= cms.bool(False), # Dump all trigger information
+					isData		= cms.bool(True),
+					bits		= cms.InputTag("TriggerResults", "", "HLT"),
 	    				prescales 	= cms.InputTag("patTrigger"),
-					objects		= cms.InputTag("selectedPatTrigger")
+					objects		= cms.InputTag("selectedPatTrigger"),
+					useTriggerList  = cms.bool(False), # Only save information for triggers in the list
+					triggerList	= cms.vstring("HLT_Ele25WP60_SC4_Mass55_v1",
+								      "HLT_Mu40_v1",
+								     )
 )
-process.b2g = cms.EDFilter('b2g_miniAodAnalyzer_general',
+process.general = cms.EDFilter('b2g_miniAodAnalyzer_general',
 					vertexToken	= cms.InputTag("offlineSlimmedPrimaryVertices"),
 	    				metToken 	= cms.InputTag("slimmedMETs"),
 					electronToken	= cms.InputTag("slimmedElectrons"),
@@ -101,6 +111,6 @@ process.b2g = cms.EDFilter('b2g_miniAodAnalyzer_general',
 process.p = cms.Path(
 	process.extraJetCols *
 	process.trigger *
-	process.b2g
+	process.general
 )
 print "---+++---+++---+++---"

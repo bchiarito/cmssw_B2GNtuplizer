@@ -9,12 +9,12 @@ process.source = cms.Source("PoolSource",
 '/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/E873348E-BC70-E411-BFA8-0025907B4FD6.root'
 ))
 # Number of events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 # Message Service
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 # Output file
 process.out = cms.OutputModule("PoolOutputModule",
@@ -36,7 +36,7 @@ from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
 from RecoJets.JetProducers.caTopTaggers_cff import cmsTopTagPFJetsCHS
 from RecoJets.JetProducers.caTopTaggers_cff import caTopTagInfos
 
-process.chs = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV()>0"))
+process.chs = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV()>2"))
 process.ca8PFJetsCHS = ak5PFJets.clone(
 					src = 'chs',
 					rParam = cms.double(0.8),
@@ -77,7 +77,7 @@ process.extraJetCols = cms.Sequence(
 # Ntuplizer
 process.trigger = cms.EDFilter('b2g_miniAodAnalyzer_trigger',
 					printAll	= cms.bool(False), # Dump all trigger information
-					isData		= cms.bool(True),
+					isData		= cms.bool(True), # If false will not save HLT Objects
 					bits		= cms.InputTag("TriggerResults", "", "HLT"),
 	    				prescales 	= cms.InputTag("patTrigger"),
 					objects		= cms.InputTag("selectedPatTrigger"),
@@ -87,14 +87,20 @@ process.trigger = cms.EDFilter('b2g_miniAodAnalyzer_trigger',
 								     )
 )
 process.general = cms.EDFilter('b2g_miniAodAnalyzer_general',
-					vertexToken	= cms.InputTag("offlineSlimmedPrimaryVertices"),
-	    				metToken 	= cms.InputTag("slimmedMETs"),
-					electronToken	= cms.InputTag("slimmedElectrons"),
-		    			muonToken	= cms.InputTag("slimmedMuons"),
-		    			tauToken	= cms.InputTag("slimmedTaus"),
-					photonToken	= cms.InputTag("slimmedPhotons"),
-					ak4slimmedToken	= cms.InputTag("slimmedJets"),
-					ak8slimmedToken	= cms.InputTag("slimmedJetsAK8"),
+					vertecies	= cms.InputTag("offlineSlimmedPrimaryVertices"),
+	    				met 		= cms.InputTag("slimmedMETs"),
+					electrons	= cms.InputTag("slimmedElectrons"),
+		    			muons		= cms.InputTag("slimmedMuons"),
+		    			taus		= cms.InputTag("slimmedTaus"),
+					photons		= cms.InputTag("slimmedPhotons"),
+					ak4slimmed	= cms.InputTag("slimmedJets"),
+					ak8slimmed	= cms.InputTag("slimmedJetsAK8"),
+					ak8grommedMasses = cms.bool(True),
+					pfcands		= cms.InputTag("packedPFCandidates"),
+					chscands	= cms.InputTag("chs")
+)
+# Below module updated in future version, does not run
+process.jets = cms.EDFilter('b2g_miniAodAnalyzer_jets',
 					pfcandsToken	= cms.InputTag("packedPFCandidates"),
 					chscandsToken	= cms.InputTag("chs"),
 					ca8Token 	= cms.InputTag("selectedca8PFJetsCHS"),
@@ -112,5 +118,6 @@ process.p = cms.Path(
 	process.extraJetCols *
 	process.trigger *
 	process.general
+#	process.jets
 )
 print "---+++---+++---+++---"

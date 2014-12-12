@@ -9,7 +9,7 @@ process.source = cms.Source("PoolSource",
 '/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/E873348E-BC70-E411-BFA8-0025907B4FD6.root'
 ))
 # Number of events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
 # Message Service
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -29,14 +29,18 @@ process.outpath = cms.EndPath(process.out)
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 process.out.dropMetaData = cms.untracked.string("DROPPED")
 
-# Add extra jet collections to miniAOD (ca jets)
+# Add extra jet collections with CMSSW RECO tools
 from RecoJets.JetProducers.ak5PFJetsPruned_cfi import ak5PFJetsPruned
 from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
 from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
 from RecoJets.JetProducers.caTopTaggers_cff import cmsTopTagPFJetsCHS
 from RecoJets.JetProducers.caTopTaggers_cff import caTopTagInfos
-
-process.chs = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV()>2"))
+process.chs = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV()>1"))
+process.ak4PFJetsCHS = ak5PFJets.clone(
+					src = 'chs',
+					rParam = cms.double(0.4),
+					jetPtMin = cms.double(10.0),
+					jetAlgorithm = cms.string("AntiKt"))
 process.ca8PFJetsCHS = ak5PFJets.clone(
 					src = 'chs',
 					rParam = cms.double(0.8),
@@ -57,21 +61,19 @@ process.ca8PFJetsCHSPruned = ak5PFJets.clone(
 process.cmsTopTagPFJetsCHS = cmsTopTagPFJetsCHS.clone(src = cms.InputTag('chs'))
 process.caTopTagInfos = caTopTagInfos.clone(src = cms.InputTag("cmsTopTagPFJetsCHS"))
 process.ca8Njettiness = Njettiness.clone(src = 'ca8PFJetsCHS')
-
 process.selectedca8PFJetsCHS = cms.EDFilter('PFJetSelector',
 					src = cms.InputTag('ca8PFJetsCHS'),
 					cut = cms.string('pt > 25 && abs(eta) < 2.4'))
 process.selectedca8Njettiness = Njettiness.clone(src = 'selectedca8PFJetsCHS')
-
 process.extraJetCols = cms.Sequence(
-	process.chs *
+	process.ak4PFJetsCHS *
 	process.ca8PFJetsCHS *
 	process.ca8PFJetsCHSPruned *
 	process.ca8Njettiness *
 	process.cmsTopTagPFJetsCHS *
-	process.caTopTagInfos *
-	process.selectedca8PFJetsCHS *
-	process.selectedca8Njettiness
+	process.caTopTagInfos
+	#process.selectedca8PFJetsCHS *
+	#process.selectedca8Njettiness
 )
 
 # Ntuplizer
@@ -96,28 +98,40 @@ process.general = cms.EDFilter('b2g_miniAodAnalyzer_general',
 					ak4slimmed	= cms.InputTag("slimmedJets"),
 					ak8slimmed	= cms.InputTag("slimmedJetsAK8"),
 					ak8grommedMasses = cms.bool(True),
-					pfcands		= cms.InputTag("packedPFCandidates"),
-					chscands	= cms.InputTag("chs")
+					pfcands		= cms.InputTag("packedPFCandidates")
 )
-# Below module updated in future version, does not run
-process.jets = cms.EDFilter('b2g_miniAodAnalyzer_jets',
-					pfcandsToken	= cms.InputTag("packedPFCandidates"),
-					chscandsToken	= cms.InputTag("chs"),
-					ca8Token 	= cms.InputTag("selectedca8PFJetsCHS"),
-					ca8tau1Token 	= cms.InputTag("selectedca8Njettiness", "tau1"),
-					ca8tau2Token 	= cms.InputTag("selectedca8Njettiness", "tau2"),
-					ca8tau3Token 	= cms.InputTag("selectedca8Njettiness", "tau3"),
-					ca8prunedToken 	= cms.InputTag("ca8PFJetsCHSPruned"),
-					ca8subjetsToken	= cms.InputTag("ca8PFJetsCHSPruned", "SubJets"),
-					ca8TopTagToken 	= cms.InputTag("cmsTopTagPFJetsCHS"),
-					ca8TopTagInfoToken = cms.InputTag("caTopTagInfos")
+# Add extra jet collections running FastJet 'by hand'
+process.ca8jets = cms.EDFilter('b2g_miniAodAnalyzer_jets',
+					vertecies	= cms.InputTag("offlineSlimmedPrimaryVertices"),
+					pfcands		= cms.InputTag("packedPFCandidates"),
+					jetAlgo  	= cms.string("CA"), # CA, KT, AK
+					jetR  		= cms.double(0.8),
+					jetPtmin  	= cms.double(10.0)
+)
+
+process.ak4jets = cms.EDFilter('b2g_miniAodAnalyzer_jets',
+					vertecies	= cms.InputTag("offlineSlimmedPrimaryVertices"),
+					pfcands		= cms.InputTag("packedPFCandidates"),
+					jetAlgo  	= cms.string("AK"), # CA, KT, AK
+					jetR  		= cms.double(0.4),
+					jetPtmin  	= cms.double(10.0)
+)
+process.ak8jets = cms.EDFilter('b2g_miniAodAnalyzer_jets',
+					vertecies	= cms.InputTag("offlineSlimmedPrimaryVertices"),
+					pfcands		= cms.InputTag("packedPFCandidates"),
+					jetAlgo  	= cms.string("AK"), # CA, KT, AK
+					jetR  		= cms.double(0.8),
+					jetPtmin  	= cms.double(100.0)
 )
 
 # Path
 process.p = cms.Path(
+	process.chs *
 	process.extraJetCols *
 	process.trigger *
-	process.general
-#	process.jets
+	process.general *
+	process.ca8jets *
+	process.ak4jets *
+	process.ak8jets
 )
 print "---+++---+++---+++---"

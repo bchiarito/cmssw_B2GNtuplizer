@@ -58,7 +58,6 @@ class b2g_miniAodAnalyzer_general : public edm::EDFilter
       	edm::EDGetTokenT<pat::JetCollection> ak4slimmed_;
       	edm::EDGetTokenT<pat::JetCollection> ak8slimmed_;
 	edm::EDGetTokenT<std::vector<pat::PackedCandidate> > pfcands_;
-      	edm::EDGetTokenT<edm::PtrVector<reco::Candidate> > chscands_;
 	bool ak8grommedMasses_;
 };
 
@@ -73,7 +72,6 @@ b2g_miniAodAnalyzer_general::b2g_miniAodAnalyzer_general(const edm::ParameterSet
     	ak4slimmed_	(consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("ak4slimmed"))),
     	ak8slimmed_	(consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("ak8slimmed"))),
 	pfcands_	(consumes<std::vector<pat::PackedCandidate> >(iConfig.getParameter<edm::InputTag>("pfcands"))),
-    	chscands_	(consumes<edm::PtrVector<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("chscands"))),
 	ak8grommedMasses_	(iConfig.getParameter<bool>("ak8grommedMasses"))
 {
 	// Declare products
@@ -167,9 +165,6 @@ bool b2g_miniAodAnalyzer_general::filter(edm::Event& iEvent, const edm::EventSet
 
 	edm::Handle<std::vector<pat::PackedCandidate> > pfcands;
   	iEvent.getByToken(pfcands_, pfcands);
-	
-	edm::Handle<edm::PtrVector<reco::Candidate> > chscands;
-  	iEvent.getByToken(chscands_, chscands);
 	
 	/////////////
 	// Vertexes:

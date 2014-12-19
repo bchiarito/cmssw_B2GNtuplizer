@@ -9,7 +9,6 @@ from DataFormats.FWLite import Events, Handle
 from array import array
 from math import *
 import sys
-sys.path.insert(0, '/uscms_data/d2/bchiari1/CMSSW_5_3_13/test/ttree')
 from JetTools import *
 from lepWmaker import *
 from operator import itemgetter

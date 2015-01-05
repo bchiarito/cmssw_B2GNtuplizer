@@ -328,7 +328,9 @@ bool b2g_miniAodAnalyzer_general::filter(edm::Event& iEvent, const edm::EventSet
 		reco::Candidate::PolarLorentzVector ak4jet4 (iak4jet.pt(), iak4jet.eta(), iak4jet.phi(), iak4jet.mass());
 		ak4slimmedjet->push_back(ak4jet4);
 		AK4jetsCSV->push_back(std::max(0.f,iak4jet.bDiscriminator("combinedSecondaryVertexBJetTags")));
+		std::cout << iak4jet.bDiscriminator("combinedSecondaryVertexBJetTags") << std::endl;
 		AK4jetsISV->push_back(std::max(0.f,iak4jet.bDiscriminator("combinedInclusiveSecondaryVertexBJetTags")));
+		std::cout << iak4jet.bDiscriminator("combinedInclusiveSecondaryVertexBJetTags") << std::endl;
 	}
 
 	/// slimmed fat jets (ak8)

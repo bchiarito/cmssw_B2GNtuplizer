@@ -5,11 +5,11 @@ process = cms.Process("B2G")
 # Input file
 process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring(
-'file:/eos/uscms/store/user/bchiari1/miniaod/T5tttt_3body/T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_pythia8-23bodydec.MINIAODSIM.00.root'
-#'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/E873348E-BC70-E411-BFA8-0025907B4FD6.root'
+#'file:/eos/uscms/store/user/bchiari1/miniaod/T5tttt_3body/T1tttt_2J_mGo1300_mStop300_mCh285_mChi280_pythia8-23bodydec.MINIAODSIM.00.root'
+'/store/mc/Phys14DR/TBarToLeptons_t-channel_Tune4C_CSA14_13TeV-aMCatNLO-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/E873348E-BC70-E411-BFA8-0025907B4FD6.root'
 ))
 # Number of events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 # Message Service
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -69,7 +69,7 @@ process.extraJetCols = cms.Sequence(
 	process.ca8PFJetsCHSPruned *
 	process.ca8Njettiness *
 	process.cmsTopTagPFJetsCHS *
-	process.caTopTagInfos
+	process.caTopTagInfos *
 	process.selectedca8PFJetsCHS *
 	process.selectedca8Njettiness
 )

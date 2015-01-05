@@ -69,7 +69,7 @@ process.extraJetCols = cms.Sequence(
 	process.ca8PFJetsCHSPruned *
 	process.ca8Njettiness *
 	process.cmsTopTagPFJetsCHS *
-	process.caTopTagInfos
+	process.caTopTagInfos *
 	process.selectedca8PFJetsCHS *
 	process.selectedca8Njettiness
 )
